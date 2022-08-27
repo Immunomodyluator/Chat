@@ -2,9 +2,10 @@
   "name": "chat",
   "version": "1.0.0",
   "description": "Sosiska",
+  "type": "module",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon -e * index.js"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +14,9 @@
     "express": "^4.17.3",
     "smooth-scrollbar": "^8.7.4",
     "socket.io": "^4.4.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }
