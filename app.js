@@ -1,50 +1,64 @@
 import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import http from "http";
+import mongoose from "mongoose";
+import { WebSocketServer } from "ws";
+import { randomUUID } from "crypto";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import router from "./router/authRouter.js";
 
 const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  /* options */
-});
-app.use(express.static("public"));
-
+const server = http.createServer(app);
 const PORT = 80;
 
-let users = [];
+app.use(express.json());
+app.use(express.static("public"));
+app.use(cookieParser());
+app.use(cors());
+app.use(router);
 
-app.get("/hello", function (req, res) {
-  res.send("hello world");
-});
+const wss = new WebSocketServer({ server });
+const clients = new Set();
 
-io.on("connection", (socket) => {
-  let ID = socket.id.toString().slice(1, 6);
-  let IP = socket.handshake.address;
-  console.log(`${ID} connected`);
-  users.push({ id: ID, ip: IP });
-  console.log(users);
+wss.on("connection", function connections(ws) {
+  const connectionId = randomUUID();
 
-  socket.on("chat message", (msg) => {
-    io.emit("chat message", `${ID}: ${msg}`);
-    console.log("message: " + `${ID}: ${msg}`);
+  clients.add(connectionId);
+
+  ws.on("message", function (message) {
+    message = JSON.parse(message);
+    console.log(clients);
+    message.uuid = JSON.stringify([...clients]);
+    broadcastMessage(message);
   });
 
-  socket.on("disconnecting", () => {
-    let obIndex = users.findIndex((item) => item.id === ID);
-    users.splice(obIndex, 1);
-    onlineUser();
-    console.log(`${ID} disconnected`);
+  ws.on("close", function () {
+    clients.delete(connectionId);
+    console.log(clients);
   });
-
-  function onlineUser() {
-    let usersHTML = "";
-    for (let key in users) {
-      usersHTML = usersHTML + `<div>id ${users[key].id}</div>`;
-    }
-    io.emit("usersHTML", usersHTML);
-  }
 });
 
-httpServer.listen(PORT, () => {
+function broadcastMessage(message) {
+  wss.clients.forEach((client) => {
+    client.send(JSON.stringify(message));
+  });
+}
+
+mongooseConnect().then(() => {
+  console.log("База данных подключена");
+});
+
+async function mongooseConnect(uri, callback) {
+  await mongoose.connect(
+    "mongodb://localhost:27017/server?retryWrites=true&w=majority",
+    {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    },
+    () => {}
+  );
+}
+
+server.listen(PORT, () => {
   console.log(`listening on: ${PORT}`);
 });

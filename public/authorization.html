@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles/style.css" />
+    <title>Регистрация</title>
+  </head>
+  <body>
+    <div class="auth">
+      <div class="auth__button">
+        <button class="register-select">Регистрация</button>
+        <button class="login-select">Вход</button>
+      </div>
+      <div class="result"></div>
+      <div class="registration">
+        <h1 class="registration-header">Регистрация</h1>
+        <form action="" id="register" name="register">
+          <label>
+            Email
+            <input type="email" class="register-email" />
+          </label>
+          <label>
+            Логин
+            <input type="text" class="register-login" />
+          </label>
+          <label>
+            Пароль
+            <input type="password" class="register-password" />
+          </label>
+          <button type="button" class="button-register">Регистрация</button>
+        </form>
+      </div>
+      <div class="login">
+        <h1 class="login-header">Вход</h1>
+        <form action="" id="login" name="register">
+          <label>
+            Email
+            <input type="email" class="login-email" />
+          </label>
+          <label>
+            Логин
+            <input type="text" name="" class="login-login" />
+          </label>
+          <label>
+            Пароль
+            <input type="password" name="" class="login-password" />
+          </label>
+          <button type="button" class="button-login">Вход</button>
+        </form>
+      </div>
+    </div>
+  </body>
+  <script src="script/axios.js"></script>
+  <script src="script/register.js"></script>
+</html>
